@@ -5,11 +5,11 @@ import random
 import string
 import requests
 
-ESP_IP = " your IP Address " 
+ESP_IP = "Yor IP address"
 BASE_URL = f"http://{ESP_IP}"
 
-DURATION_S = 20             
-WORKERS = 8                
+DURATION_S = 100           
+WORKERS =  10             
 TIMEOUT = 1.5
 
 def random_path():
@@ -46,6 +46,7 @@ def main():
     stop_time = time.time() + DURATION_S
     results = []
 
+    start_time = time.time()
     print(f"Scan starting: {WORKERS} workers for {DURATION_S}s -> {BASE_URL}/no_such_*")
 
     threads = []
@@ -57,6 +58,9 @@ def main():
     for t in threads:
         t.join()
 
+    end_time = time.time()
+    total_runtime = end_time - start_time    
+
  
     total_requests = sum(1 for r in results if r[3] not in ("DONE",))
     count_404 = sum(1 for r in results if r[3] == 404)
@@ -67,6 +71,7 @@ def main():
     print(f"404 responses (scan): {count_404}")
     print(f"403 responses (blocked): {count_403}")
     print(f"Network errors: {net_errs}")
+    print(f"Total runtime: {total_runtime:.2f} seconds")
 
     ts = int(time.time())
     out = f"scan_{ESP_IP}_{ts}.csv"

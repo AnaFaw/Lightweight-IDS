@@ -3,7 +3,7 @@ import csv
 import threading
 import requests
 
-ESP_IP = " your IP Address "  
+ESP_IP = "Yor IP address"
 BASE_URL = f"http://{ESP_IP}/"
 
 TIMEOUT = 4.0
@@ -41,10 +41,13 @@ def main():
     # 🔹 Interaktiv input
     workers = int(input("specify number workers (t.ex. 20, 50, 80): "))
     duration = int(input("specify duration in seconds (t.ex. 15, 20): "))
+    
 
     print(f"\nStartar flood mot {BASE_URL}")
     print(f"Workers: {workers}")
     print(f"Duration: {duration} seconds\n")
+
+    start_time = time.time()
 
     stop_time = time.time() + duration
     results = []
@@ -63,15 +66,21 @@ def main():
     for t in threads:
         t.join()
 
+    end_time = time.time()
+    total_runtime = end_time - start_time    
+
     # ===== Summering =====
     total_requests = sum(1 for r in results if r[3] not in ("DONE",))
+    count_200 = sum(1 for r in results if r[3] == 200)
     count_403 = sum(1 for r in results if r[3] == 403)
     net_errs = sum(1 for r in results if r[3] == "NET_ERR")
 
     print("=== RESULTAT ===")
     print(f"Totala requests: {total_requests}")
+    print(f"200 (flood): {count_200}")
     print(f"403 (BLOCK): {count_403}")
     print(f"Nätverksfel: {net_errs}")
+    print(f"Total runtime: {total_runtime:.2f} seconds")
 
     # ===== save logg =====
     ts = int(time.time())

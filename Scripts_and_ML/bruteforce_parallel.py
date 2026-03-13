@@ -3,7 +3,7 @@ import csv
 import threading
 import requests
 
-ESP_IP = " Yor IP address "
+ESP_IP = "Yor IP address"
 URL = f"http://{ESP_IP}/login"
 PARAMS = {"token": "wrong"}
 
@@ -36,10 +36,11 @@ def worker(stop_time: float, results: list, wid: int):
 
 
 def main():
+
     print("=== PARALLEL BRUTE FORCE START ===")
     workers = int(input("specify number workers (t.ex. 10, 20, 40): "))
     duration = int(input("specify duration in seconds (t.ex. 10, 15, 20): "))
-
+    start_time = time.time()
     stop_time = time.time() + duration
     results = []
 
@@ -52,16 +53,22 @@ def main():
     for t in threads:
         t.join()
 
+    end_time = time.time()
+    total_runtime = end_time - start_time
+
     total_requests = sum(1 for r in results if r[3] not in ("DONE",))
     count_401 = sum(1 for r in results if r[3] == 401)
     count_403 = sum(1 for r in results if r[3] == 403)
     net_errs = sum(1 for r in results if r[3] == "NET_ERR")
 
+
     print("=== RESULTAT ===")
     print(f"Totala requests: {total_requests}")
     print(f"401 (LOGIN FAIL): {count_401}")
     print(f"403 (BLOCK): {count_403}")
-    print(f"Nätverksfel: {net_errs}")
+    print(f"NÃ¤tverksfel: {net_errs}")
+    print(f"Total runtime: {total_runtime:.2f} seconds")
+    
 
     ts = int(time.time())
     out = f"bruteforce_parallel_{ESP_IP}_{ts}.csv"
